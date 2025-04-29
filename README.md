@@ -1,4 +1,4 @@
-# Sisop-03-2025-IT05
+# Sisop-3-2025-IT05
 Below are the steps on how to use the template: 
 1. Copy paste the template as many as how many questions there are
 2. Change the contents of the template according to your needs
