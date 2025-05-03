@@ -44,7 +44,7 @@ void decrypt(int sock) {
 
     FILE *file = fopen(path, "r"); // open file for reading
     if (file == NULL) { // check if file opened successfully
-        perror("Failed to open file");
+        perror("Your file is an impostor. The filename doesn't exist.\n");
         return;
     }
 
@@ -54,7 +54,7 @@ void decrypt(int sock) {
 
     char *content = malloc(file_size + 1); // allocate memory for file content
     if (content == NULL) { // check if memory allocation failed
-        perror("Failed to allocate memory");
+        perror("You are a failure! Memory allocation has failed!\n");
         fclose(file);
         return;
     }
@@ -67,7 +67,7 @@ void decrypt(int sock) {
     snprintf(command, sizeof(command), "DECRYPT %s\n%s", filename, content); // create command
     send(sock, command, strlen(command), 0); // send command to server
 
-    free(content); // free allocated memory
+    /* free(content); // free allocated memory */
 
     char response[256];
     read(sock, response, sizeof(response)); // read response from server

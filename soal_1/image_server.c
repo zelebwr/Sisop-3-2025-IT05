@@ -13,7 +13,7 @@
 #define SERVER_DATABASE "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server/database"
 #define SERVER_LOG "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server/server.log"
 #define CLIENT_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client"
-#define CLIENT_SECRETS "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client/client_secrets"
+#define CLIENT_SECRETS "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client/secrets"
 #define LOG_FILE "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server/server.log"
 
 FILE *log_file;
@@ -105,21 +105,21 @@ void decrypt(const char *filename, char *content, int client_fd) {
     }
     
     char success_msg[256];
-    snprintf(success_msg, sizeof(success_msg), "Successfully decrypted! File: %s.jpeg", now);
+    snprintf(success_msg, sizeof(success_msg), "Successfully decrypted! File: %ld.jpeg", now);
+    success_msg[strlen(success_msg)] = '\0'; // null-terminate string
     send(client_fd, success_msg, strlen(success_msg), 0);
 
+    char filename_msg[256];
+    snprintf(filename_msg, sizeof(filename_msg), "%ld.jpeg", now);
+    logging("Server", "SAVE", filename_msg); // log message
+    
     // writing binary data to output file
     fwrite(bin, 1, len, output_file); // write binary data
     fclose(output_file); // close output file
 
     // free memory
-    free(content); // free content
-    free(bin); // free binary data
-
-    // logging
-
-
-    logging("Server", "SAVE", output); // log message
+    /* free(content); // free content
+    free(bin); // free binary data */
     return; 
 }
 
@@ -159,7 +159,7 @@ void client_handler(int client_fd) {
             return;
         }
 
-        logging("Server", "UPLOAD", filename); // log message
+        logging("Client", "DOWNLOAD", filename); // log message
 
         char file_data[7000]; // buffer for file data   
         size_t bytes_read; 
@@ -167,6 +167,9 @@ void client_handler(int client_fd) {
         while ((bytes_read = fread(file_data, 1, sizeof(file_data), file)) > 0) { // read file data
             send(client_fd, file_data, bytes_read, 0); // send file data to client
         }
+
+        logging("Server", "UPLOAD", filename); // log message
+
         fclose(file); // close file
         close(client_fd); // close client socket
         return;
@@ -176,6 +179,7 @@ void client_handler(int client_fd) {
         close(client_fd); // close client socket
         return;
     }
+
 
     close(client_fd); // close client socket
     return;
