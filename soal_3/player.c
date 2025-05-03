@@ -35,8 +35,7 @@ int main() {
         if (bytes <= 0) break;
         buffer[bytes] = '\0';
         printf("%s", buffer);
-
-        // Input menu (angka)
+        
         printf("> ");
         fgets(buffer, BUFFER_SIZE, stdin);
         buffer[strcspn(buffer, "\n")] = 0;
@@ -44,7 +43,7 @@ int main() {
 
         if (strcmp(buffer, "5") == 0) break;
 
-        // Terima respon lanjutan
+
         while (1) {
             memset(buffer, 0, BUFFER_SIZE);
             bytes = recv(sockfd, buffer, BUFFER_SIZE - 1, 0);
@@ -52,7 +51,7 @@ int main() {
             buffer[bytes] = '\0';
             printf("%s", buffer);
 
-            // Jika server meminta input tambahan
+        
             if (strstr(buffer, "Enter") || strstr(buffer, "Command:")) {
                 printf("> ");
                 fgets(buffer, BUFFER_SIZE, stdin);
