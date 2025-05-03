@@ -20,10 +20,9 @@ Weapon weapon_list[MAX_WEAPONS] = {
     {"Bingchilling", 5, 10, "", 0}
 };
 
-// Fungsi untuk menampilkan list senjata
 void list_weapons(char *out) {
     strcpy(out, "\n=== Weapon Shop ===\n");
-    for (int i = 1; i < MAX_WEAPONS; ++i) { // Lewati indeks 0 (Fists)
+    for (int i = 1; i < MAX_WEAPONS; ++i) {
         char line[256];
         snprintf(line, sizeof(line), "%d. %s | DMG: %d | Gold: %d%s%s\n",
                  i,
@@ -36,18 +35,17 @@ void list_weapons(char *out) {
     }
 }
 
-// Fungsi untuk membeli senjata
 int buy_weapon(int index, int *gold, char *equipped_weapon, int *base_damage) {
     if (index <= 0 || index >= MAX_WEAPONS)
-        return -2; // indeks tidak valid atau mencoba beli "Fists"
+        return -2;
 
     Weapon w = weapon_list[index];
     if (*gold < w.price)
-        return -1; // uang tidak cukup
+        return -1;
 
     *gold -= w.price;
     strcpy(equipped_weapon, w.name);
     *base_damage = w.damage;
 
-    return 0; // berhasil
+    return 0;
 }
