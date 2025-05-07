@@ -181,4 +181,23 @@ struct sockaddr_in serv_addr = {
 > - `.sin_family` is to declare the family internet it's using.  
 > - `.sin_port` using the `htons()` to declare the port number it's using.
 
+# Soal 2
 
+## Sub Soal a
+
+### Overview
+Initialize the system with order data from 'delivery_order.csv' and share it across processes.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
