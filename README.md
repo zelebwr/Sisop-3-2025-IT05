@@ -1,39 +1,4 @@
 # Sisop-3-2025-IT05
-Below are the steps on how to use the template: 
-1. Copy paste the template as many as how many questions there are
-2. Change the contents of the template according to your needs
-3. Don't forget to delete the template and this message before submitting the official report
-
-Below are the template:
-
-
-# Soal {n, n = the n-th question}
-
-## Sub Soal {x, x = which sub question}
-
-### Overview
-{Fill this with a small overview on what the sub question wants you to do}
-
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
-
-### Code Block
-```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
-}
-```
-
-### Explanation
-{Fill this with your explanation about the code}
-
-### Revision
-{Here if you have any revisions that you were told to do}
-
-
-# Copy paste the above template below 
-
 # Soal 1
 
 ## Sub Soal a
@@ -1548,6 +1513,328 @@ return 0;
 > - If the server’s message includes "Enter" or "Command:", the client assumes the server is waiting for additional input (e.g., choosing a weapon, typing "attack"). If not, it breaks and goes back to the main menu loop.
 > - Once the player exits the game (option 5), the client socket is closed and the program ends cleanly.
 
+# Soal 4
 
+## Sub Soal a
 
+### Overview
+Shared memory is used to synchronize data between two programs: system.c for game management and hunter.c for player interaction.
 
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+key_t key = ftok("system.c", 'S');
+shmid = shmget(key, sizeof(GameData), IPC_CREAT | 0666);
+game = shmat(shmid, NULL, 0);
+
+sem_id = semget(key, 1, IPC_CREAT | 0666);
+semctl(sem_id, 0, SETVAL, 1);
+```
+
+### Explanation
+> - ftok(): Generate IPC key from file.
+> - shmget(): Create shared memory.
+> - shmat(): Attach shared memory.
+> - semget(), semctl(): Create and initialize semaphore.
+
+## Sub Soal b
+
+### Overview
+Register a new hunter with a unique key and default stats.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+Hunter h;
+printf("Enter hunter name: ");
+scanf("%s", h.name);
+
+h.key = rand() % 9000 + 1000;
+h.banned = 0;
+h.stats = (Stats){1, 10, 100, 5, 0};
+
+game->hunters[game->total_hunters] = h;
+game->total_hunters++;
+
+printf("Hunter registered! Key: %d\n", h.key);
+```
+
+### Explanation
+> It generates random key and initializes hunter data.
+
+## Sub Soal c
+
+### Overview
+List all registered hunters.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+printf("=== HUNTERS LIST ===\n");
+for (int i = 0; i < game->total_hunters; i++) {
+    Hunter h = game->hunters[i];
+    printf("%s (Key:%d) Lv.%d %s\n", h.name, h.key, h.stats.level, h.banned ? "[BANNED]" : "");
+}
+```
+
+### Explanation
+> Loop to print hunter details.
+
+## Sub Soal d
+
+### Overview
+Ban a hunter using their key.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int key;
+printf("Enter hunter key to ban: ");
+scanf("%d", &key);
+
+for (int i = 0; i < game->total_hunters; i++) {
+    if (game->hunters[i].key == key) {
+        game->hunters[i].banned = 1;
+        printf("Hunter banned!\n");
+        return;
+    }
+}
+printf("Hunter not found!\n");
+```
+
+### Explanation
+> Search and ban matching hunter by key.
+
+## Sub Soal e
+
+### Overview
+Create a dungeon with random attributes.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+Dungeon d;
+sprintf(d.name, "Dungeon%d", game->total_dungeons + 1);
+d.min_level = rand() % 5 + 1;
+d.rewards = (Stats){
+    .atk = rand() % 51 + 100,
+    .hp = rand() % 51 + 50,
+    .def = rand() % 26 + 25,
+    .exp = rand() % 151 + 150
+};
+
+game->dungeons[game->total_dungeons] = d;
+game->total_dungeons++;
+```
+
+### Explanation
+> Random dungeon attributes are set and saved.
+
+## Sub Soal f
+
+### Overview
+Login using hunter key.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+printf("Enter key: ");
+scanf("%d", &current_key);
+
+Hunter *h = findHunter(current_key);
+if (!h || h->banned) {
+    printf("Invalid or banned key.\n");
+    exit(1);
+}
+me = h;
+```
+
+### Explanation
+> Validates login and sets me pointer.
+
+## Sub Soal g
+
+### Overview
+List available dungeons and current hunter stats.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+printf("Level: %d\n", me->stats.level);
+printf("EXP: %d/500\n", me->stats.exp);
+printf("ATK: %d\n", me->stats.atk);
+printf("HP: %d\n", me->stats.hp);
+printf("DEF: %d\n", me->stats.def);
+
+for (int i = 0; i < game->total_dungeons; i++) {
+    Dungeon d = game->dungeons[i];
+    printf("[%d] %s (Lv.%d+)\n", i, d.name, d.min_level);
+    printf("   Reward: ATK+%d HP+%d DEF+%d EXP+%d\n",
+           d.rewards.atk, d.rewards.hp, d.rewards.def, d.rewards.exp);
+}
+```
+
+### Explanation
+> Display hunter stats and dungeons.
+
+## Sub Soal h
+
+### Overview
+Enter a dungeon and get rewards.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int num;
+scanf("%d", &num);
+Dungeon d = game->dungeons[num];
+
+if (me->stats.level < d.min_level) {
+    printf("Level too low!\n");
+    return;
+}
+
+me->stats.atk += d.rewards.atk;
+me->stats.hp += d.rewards.hp;
+me->stats.def += d.rewards.def;
+me->stats.exp += d.rewards.exp;
+
+if (me->stats.exp >= 500) {
+    me->stats.level++;
+    me->stats.exp = 0;
+    printf("Level up! Now Lv.%d\n", me->stats.level);
+}
+```
+
+### Explanation
+> Dungeon rewards added, level up if EXP reaches threshold.
+
+## Sub Soal i
+
+### Overview
+Auto-refresh available dungeons every 3 seconds.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+while (1) {
+    system("clear");
+    for (int i = 0; i < game->total_dungeons; i++) {
+        Dungeon d = game->dungeons[i];
+        if (me->stats.level >= d.min_level) {
+            printf("[%d] %s (Lv.%d+)\n", i, d.name, d.min_level);
+            printf("   Reward: ATK+%d HP+%d DEF+%d EXP+%d\n\n",
+                   d.rewards.atk, d.rewards.hp, d.rewards.def, d.rewards.exp);
+        }
+    }
+    sleep(3);
+}
+```
+
+### Explanation
+> Continuous loop that filters dungeons by hunter level.
+
+## Sub Soal j
+
+### Overview
+Clean up shared memory and semaphore.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+shmdt(game);
+shmctl(shmid, IPC_RMID, NULL);
+semctl(sem_id, 0, IPC_RMID);
+```
+
+### Explanation
+> Detaches and removes IPC resources.
+
+## Sub Soal k
+
+### Overview
+Lock and unlock wrappers using semaphore.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+void lock() {
+    struct sembuf op = {0, -1, 0};
+    semop(sem_id, &op, 1);
+}
+
+void unlock() {
+    struct sembuf op = {0, 1, 0};
+    semop(sem_id, &op, 1);
+}
+```
+
+### Explanation
+> Basic semaphore operation to control access.
+
+## Sub Soal l
+
+### Overview
+Define core data structures.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+#define MAX_HUNTERS 10
+#define MAX_DUNGEONS 10
+
+typedef struct {
+    int level, atk, hp, def, exp;
+} Stats;
+
+typedef struct {
+    char name[20];
+    int key;
+    int banned;
+    Stats stats;
+} Hunter;
+
+typedef struct {
+    char name[20];
+    int min_level;
+    Stats rewards;
+} Dungeon;
+
+typedef struct {
+    Hunter hunters[MAX_HUNTERS];
+    int total_hunters;
+    Dungeon dungeons[MAX_DUNGEONS];
+    int total_dungeons;
+} GameData;
+
+GameData *game;
+Hunter *me;
+int shmid, sem_id;
+```
+
+### Explanation
+> Structs for shared game state and global variables.
