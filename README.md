@@ -1519,9 +1519,6 @@ return 0;
 ### Overview
 Shared memory is used to synchronize data between two programs: system.c for game management and hunter.c for player interaction.
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
-
 ### Code Block
 ```c
 key_t key = ftok("system.c", 'S');
@@ -1544,7 +1541,7 @@ semctl(sem_id, 0, SETVAL, 1);
 Register a new hunter with a unique key and default stats.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4b.jpeg](assets/soal_4/4b.jpeg)
 
 ### Code Block
 ```c
@@ -1571,7 +1568,7 @@ printf("Hunter registered! Key: %d\n", h.key);
 List all registered hunters.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4c.jpeg](assets/soal_4/4c.jpeg)
 
 ### Code Block
 ```c
@@ -1591,7 +1588,7 @@ for (int i = 0; i < game->total_hunters; i++) {
 Ban a hunter using their key.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4d.jpeg](assets/soal_4/4d.jpeg)
 
 ### Code Block
 ```c
@@ -1618,7 +1615,7 @@ printf("Hunter not found!\n");
 Create a dungeon with random attributes.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4e.jpeg](assets/soal_4/4e.jpeg)
 
 ### Code Block
 ```c
@@ -1645,7 +1642,7 @@ game->total_dungeons++;
 Login using hunter key.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4f.jpeg](assets/soal_4/4f.jpeg)
 
 ### Code Block
 ```c
@@ -1669,7 +1666,7 @@ me = h;
 List available dungeons and current hunter stats.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4g.jpeg](assets/soal_4/4g.jpeg)
 
 ### Code Block
 ```c
@@ -1696,7 +1693,7 @@ for (int i = 0; i < game->total_dungeons; i++) {
 Enter a dungeon and get rewards.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4h.jpeg](assets/soal_4/4h.jpeg)
 
 ### Code Block
 ```c
@@ -1730,7 +1727,7 @@ if (me->stats.exp >= 500) {
 Auto-refresh available dungeons every 3 seconds.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![4i.jpeg](assets/soal_4/4i.jpeg)
 
 ### Code Block
 ```c
@@ -1756,9 +1753,6 @@ while (1) {
 ### Overview
 Clean up shared memory and semaphore.
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
-
 ### Code Block
 ```c
 shmdt(game);
@@ -1773,9 +1767,6 @@ semctl(sem_id, 0, IPC_RMID);
 
 ### Overview
 Lock and unlock wrappers using semaphore.
-
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block
 ```c
@@ -1797,9 +1788,6 @@ void unlock() {
 
 ### Overview
 Define core data structures.
-
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block
 ```c
