@@ -9,12 +9,12 @@
 
 // declarations
 #define PORT 8080
-#define SERVER_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server"
-#define SERVER_DATABASE "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server/database"
-#define SERVER_LOG "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server/server.log"
-#define CLIENT_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client"
-#define CLIENT_SECRETS "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client/secrets"
-#define LOG_FILE "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/server/server.log"
+#define SERVER_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/server"
+#define SERVER_DATABASE "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/server/database"
+#define SERVER_LOG "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/server/server.log"
+#define CLIENT_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/client"
+#define CLIENT_SECRETS "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/client/secrets"
+#define LOG_FILE "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/server/server.log"
 
 FILE *log_file;
 

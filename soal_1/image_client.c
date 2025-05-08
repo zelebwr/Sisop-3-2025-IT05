@@ -6,8 +6,8 @@
 
 #define PORT 8080
 #define IP "127.0.0.1"
-#define CLIENT_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client"
-#define CLIENT_SECRETS "/home/zele/college/programming/sms2/sisop/module3/Sisop-03-2025-IT05/soal_1/client/secrets"
+#define CLIENT_DIR "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/client"
+#define CLIENT_SECRETS "/home/zele/college/programming/sms2/sisop/module3/Sisop-3-2025-IT05/soal_1/client/secrets"
 
 int connect_to_server() {
     int sock = 0; 
