@@ -402,9 +402,6 @@ int main() {
 ### Overview
 dungeon.c acts as the game server, while player.c acts as the client connected via TCP socket
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
-
 ### Code Block
 ```c
 int main() {
@@ -461,8 +458,8 @@ The main() function is responsible for:
 Sightseeing
 When player.c is run, it connects to the dungeon server (dungeon.c) and displays a main menu. Players find interesting things around the dungeon, like a weapon shop and a mysterious door.
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+### Output
+![b.png](assets/soal_3/mainmenu.txt)
 
 ### Code Block
 ```c
@@ -518,8 +515,8 @@ This function manages the entire game logic for one connected client.
 Status Check
 Choosing Show Player Stats displays the player's current gold, equipped weapon, base damage, and total kills. Useful before buying weapons.
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+### Output
+![c.png](assets/soal_3/stats.txt)
 
 ### Code Block
 ```c
@@ -552,10 +549,10 @@ Weapon Shop
 Upon entering the shop, players can view a list of at least 5 weapons, each with price, damage, and optional passive effects. Two or more weapons must have unique passives.
 
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+### Output
+![d.png](assets/soal_3/shop.txt)
 
-### Code Block
+### Code Block in shop.c
 ```c
 typedef struct {
     char name[50];
@@ -629,6 +626,7 @@ This function processes the weapon purchase:
 > - Returns -1 if the player has insufficient gold.
 > - On success (0), deducts gold, equips the weapon, and updates the player's damage.
 
+## Code block's in dungeon.c
 ```c
 Case 2: {
                 char shop_menu[2048];
@@ -664,14 +662,15 @@ Case 2: {
 > - Adds weapon to inventory if there's space.
 > - Sends error message for invalid input or insufficient gold.
 
+
 ## Sub Soal e
 
 ### Overview
 Handy Inventory
 Players can view and equip weapons from their inventory. If a weapon has a passive, it is shown. Equipping a new weapon updates the player's damage and passive status.
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+### Output
+![e.png](assets/soal_3/inven.txt)
 
 ### Code Block
 ```c
@@ -725,8 +724,8 @@ Enemy Encounter
 Entering Battle Mode spawns a random enemy (50–200 HP). Players can attack or exit. Enemy HP and health bar are updated each turn. Defeating an enemy grants gold and spawns a new one.
 
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+### Output
+![f.png](assets/soal_3/battle.txt)
 
 ### Code Block
 
@@ -796,14 +795,24 @@ case 4: {
 > - The player’s command is validated and handled accordingly.
 
 ## Sub Soal g
+Other Battle Logic
+
+### Overview
+- Health & Rewards
+- Damage Equation
+![g.png](assets/soal_3/g.txt)
+- Passive
+![passive.png](assets/soal_3/passive.txt)
+
+## Sub Soal h
 
 ### Overview
 Error Handling
 Invalid inputs (like unknown menu options) are properly handled and trigger warning messages.
 
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+### Output
+![g.png](assets/soal_3/errorh.txt)
 
 ### Code Block
 ```c
