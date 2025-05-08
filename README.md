@@ -270,53 +270,159 @@ To decrypt a text file by using **Reverse Text and then decode From Hex** and ma
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block
+
+#### Client
 ```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
+void decrypt(int sock) {
+    char filename[128];
+    printf("Enter text file name: "); 
+    scanf("%s", filename); // get filename from user
+
+    char path[256];
+    snprintf(path, sizeof(path), "%s/%s", CLIENT_SECRETS, filename); // create full path
+
+    FILE *file = fopen(path, "r"); // open file for reading
+    if (file == NULL) { // check if file opened successfully
+        perror("Your file is an impostor. The filename doesn't exist.\n");
+        return;
+    }
+
+    fseek(file, 0, SEEK_END); // move to end of file
+    long file_size = ftell(file); // get file size
+    fseek(file, 0, SEEK_SET); // move back to start of file
+
+    char *content = malloc(file_size + 1); // allocate memory for file content
+    if (content == NULL) { // check if memory allocation failed
+        perror("You are a failure! Memory allocation has failed!\n");
+        fclose(file);
+        return;
+    }
+
+    fread(content, 1, file_size, file); // read file content
+    content[file_size] = '\0'; // null-terminate the string 
+    fclose(file); // close file
+
+    char command[7000];
+    snprintf(command, sizeof(command), "DECRYPT %s\n%s", filename, content); // create command
+    send(sock, command, strlen(command), 0); // send command to server
+
+    /* free(content); // free allocated memory */
+
+    char response[256];
+    read(sock, response, sizeof(response)); // read response from server
+    printf("Server: %s\n", response); // print response
+    return;
+}
+```
+
+#### Server
+```c
+void hex_to_bin(const char *hex, unsigned char *bin, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        sscanf(hex + (i * 2), "%2hhx", &bin[i]); // convert hex to binary
+    }
+}
+
+void decrypt(const char *filename, char *content, int client_fd) {
+    // reverse the content
+    int len = strlen(content); // get length of content
+    for (int i = 0; i < len / 2; i++) {
+        char temp = content[i]; // swap characters
+        content[i] = content[len - i - 1]; // reverse content
+        content[len - i - 1] = temp; // reverse content
+    }
+
+    size_t bin_len = len / 2; // length of binary data
+    unsigned char *bin = malloc(bin_len); // allocate memory for binary data
+    if (!bin) {
+        perror("Failed to allocate memory");
+        free(content);
+        exit(EXIT_FAILURE);
+    }
+
+    // decrypt content
+    hex_to_bin(content, bin, bin_len); // convert hex to binary
+
+    // saving to database
+    time_t now = time(NULL); // get current time
+    char output[256]; // output filename
+    sprintf(output, "%s/%ld.jpeg", SERVER_DATABASE, now); // create output filename
+    FILE *output_file = fopen(output, "wb"); // open output file
+    if (!output_file) {
+        perror("Failed to open output file");
+        free(content);
+        free(bin);
+        exit(EXIT_FAILURE);
+    }
+    
+    char success_msg[256];
+    snprintf(success_msg, sizeof(success_msg), "Successfully decrypted! File: %ld.jpeg", now);
+    success_msg[strlen(success_msg)] = '\0'; // null-terminate string
+    send(client_fd, success_msg, strlen(success_msg), 0);
+
+    char filename_msg[256];
+    snprintf(filename_msg, sizeof(filename_msg), "%ld.jpeg", now);
+    logging("Server", "SAVE", filename_msg); // log message
+    
+    // writing binary data to output file
+    fwrite(bin, 1, len, output_file); // write binary data
+    fclose(output_file); // close output file
+
+    // free memory
+    /* free(content); // free content
+    free(bin); // free binary data */
+    return; 
 }
 ```
 
 ### Explanation
-{Fill this with your explanation about the code}
+For the client itself, it mainly uses the `decrypt()` function, where:
 
-## Sub Soal c
+1. `scanf("%s", filename);` is to get the filename of the file that's wanted to be decrypted from an input.
+2. `snprintf(path, sizeof(path), "%s/%s", CLIENT_SECRETS, filename);` is to make the full string path directing to the file that wants to be decrypted.
+3. `fseek(file, 0, SEEK_END);` is to set the reader pointer to the EOF.
+5. `long file_size = ftell(file);` is to get the length of the file's content according to the reader pointer current location. 
+6. `fseek(file, 0, SEEK_SET);` is to set the reader pointer back to the beginning of the file.
+7. `char *content = malloc(file_size + 1)` is to allocate memory according to the size of the content from the file. 
+8. `snprintf(command, sizeof(command), "DECRYPT %s\n%s", filename, content);` is to make the full string of data that contains command, filename, and the content's data (seperated by a '\n'). 
+9. `send(sock, command, strlen(command), 0)` is to send the data in to the server through the socket.
+10. `read(sock, response, sizeof(response)` is to read the response the server give after doing the action given.
 
-### Overview
-To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
-
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
-
-### Code Block
+Meanwhile, the server mainly uses the `decrypt()` and the `hex_to_bin()` functions, where: 
+1. Here the code below is meant to reverse the order from (end) characters into (start) characters.
 ```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
-}
+for (int i = 0; i < len / 2; i++) {
+        char temp = content[i]; // swap characters
+        content[i] = content[len - i - 1]; // reverse content
+        content[len - i - 1] = temp; // reverse content
+    }
 ```
+2. `size_t bin_len = len / 2;` is to get the length of the content, using half of the original content's length since the original text was in hex.
 
-### Explanation
-{Fill this with your explanation about the code}
+3. `unsigned char *bin = malloc(bin_len)` is to allocate the memory for the content after decypted.
 
-## Sub Soal c
+4. `hex_to_bin(content, bin, bin_len);` is to convert the hex into binary format.
 
-### Overview
-To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+5. `time_t now = time(NULL);` is to get the current timestamp.
 
-### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+6. `sprintf(output, "%s/%ld.jpeg", SERVER_DATABASE, now)` is to make the full string path directing to the location of the file that has been decrypted.
 
-### Code Block
-```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
-}
-```
+7. `FILE *output_file = fopen(output, "wb");` is to open the file that has been decrypted in the mode of 'write binary', and when there's yet the file, it will be created automatically.
 
-### Explanation
-{Fill this with your explanation about the code}
+8. `snprintf(success_msg, sizeof(success_msg), "Successfully decrypted! File: %ld.jpeg", now)` is to make the full response string that will be given to the client.
+
+9. `send(client_fd, success_msg, strlen(success_msg), 0);` is to send the response message to the client. 
+
+10. `snprintf(filename_msg, sizeof(filename_msg), "%ld.jpeg", now)` is to make the full of string of the name of the file. 
+
+11. `logging("Server", "SAVE", filename_msg);` is to call the `logging()` function, where it's meant to write to the log file according to the format.
+
+12. `fwrite(bin, 1, len, output_file);` is to make sure the decrypted content has been written into the file.
+
+13. `fclose(output_file)` is to close the opened file.
+
+### Revision
+Initially the `command` variable has the size of 256, which was not enough to transfer the data to the `buffer` variable in server. The content size of all the secret texts also has the size of 6000+, which makes the error to the output of the decrypted file. So, then now the `command` is changed to the size of 7000, and now it works properly.
 
 ## Sub Soal d
 
@@ -329,70 +435,374 @@ To make a client CLI where it can **repeatedly input a command**.
 ### Code Block
 ```c
 int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    int choice; 
+    while(1) {
+        printf("\n==========================\n");
+        printf("||  ROOTKIDS DECRYPTOR  ||\n"); 
+        printf("==========================\n");
+        printf("1. Decrypt file\n");
+        printf("2. Download the decrypted file\n");
+        printf("3. Exit\n");
+        printf("Choose an option: ");
+        scanf("%d", &choice); // get user choice
+
+        if (choice == 3) { // exit if user chooses 3
+            int exit_sock = connect_to_server(); // connect to server
+            if (exit_sock < 0) { // check if connection failed
+                perror("Failed to connect to server");
+                continue;
+            }
+
+            send(exit_sock, "EXIT", 4, 0); // send exit command to server
+            close(exit_sock); // close socket
+
+            printf("Done already, rootkid?...\n");
+            break;
+        }
+
+        int sock = connect_to_server(); // connect to server
+        if (sock < 0) { // check if connection failed
+            perror("Failed to connect to server");
+            continue;
+        }
+
+        switch (choice) { // handle user choice
+            case 1:
+                decrypt(sock); // decrypt file
+                break;
+            case 2:
+                download(sock); // download file
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+
+        close(sock); // close socket
+    }
+    
     return 0;
 }
 ```
 
 ### Explanation
-{Fill this with your explanation about the code}
+To put it bluntly, the code above works by doing an infinite while loop so it can repeatedly receinve input and make decisions based on the input.
 
 ## Sub Soal e
 
 ### Overview
-To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+To make sure the output file can be opened as a jpeg image and find the king himself, rootkids.
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block
+
+#### Client
 ```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
+void decrypt(int sock) {
+    char filename[128];
+    printf("Enter text file name: "); 
+    scanf("%s", filename); // get filename from user
+
+    char path[256];
+    snprintf(path, sizeof(path), "%s/%s", CLIENT_SECRETS, filename); // create full path
+
+    FILE *file = fopen(path, "r"); // open file for reading
+    if (file == NULL) { // check if file opened successfully
+        perror("Your file is an impostor. The filename doesn't exist.\n");
+        return;
+    }
+
+    fseek(file, 0, SEEK_END); // move to end of file
+    long file_size = ftell(file); // get file size
+    fseek(file, 0, SEEK_SET); // move back to start of file
+
+    char *content = malloc(file_size + 1); // allocate memory for file content
+    if (content == NULL) { // check if memory allocation failed
+        perror("You are a failure! Memory allocation has failed!\n");
+        fclose(file);
+        return;
+    }
+
+    fread(content, 1, file_size, file); // read file content
+    content[file_size] = '\0'; // null-terminate the string 
+    fclose(file); // close file
+
+    char command[7000];
+    snprintf(command, sizeof(command), "DECRYPT %s\n%s", filename, content); // create command
+    send(sock, command, strlen(command), 0); // send command to server
+
+    /* free(content); // free allocated memory */
+
+    char response[256];
+    read(sock, response, sizeof(response)); // read response from server
+    printf("Server: %s\n", response); // print response
+    return;
+}
+
+void download(int sock) {
+    char filename[128];
+    printf("Enter file name to download: "); 
+    scanf("%s", filename); // get filename from user
+
+    char command[256];
+    snprintf(command, sizeof(command), "DOWNLOAD %s", filename); // create command
+    send(sock, command, strlen(command), 0); // send command to server
+
+    char path[256];
+    snprintf(path, sizeof(path), "%s/%s", CLIENT_DIR, filename); // create full path
+    FILE *file = fopen(path, "wb"); // open file for writing
+    if (file == NULL) { // check if file opened successfully
+        perror("Failed to open file");
+        return;
+    }
+
+    char buffer[7000]; 
+    int bytes_received;
+    while ((bytes_received = read(sock, buffer, sizeof(buffer))) > 0) { // receive data from server
+        if (bytes_received <= 0) break;
+        fwrite(buffer, 1, bytes_received, file); // write data to file
+    }
+    
+    fclose(file); // close file
+    printf("Server: File %s downloaded successfully.\n", filename); // print success message
+    return;
+}
+```
+
+#### Server
+```c
+void hex_to_bin(const char *hex, unsigned char *bin, size_t len) {
+    for (size_t i = 0; i < len; i++) {
+        sscanf(hex + (i * 2), "%2hhx", &bin[i]); // convert hex to binary
+    }
+}
+
+void decrypt(const char *filename, char *content, int client_fd) {
+    // reverse the content
+    int len = strlen(content); // get length of content
+    for (int i = 0; i < len / 2; i++) {
+        char temp = content[i]; // swap characters
+        content[i] = content[len - i - 1]; // reverse content
+        content[len - i - 1] = temp; // reverse content
+    }
+
+    size_t bin_len = len / 2; // length of binary data
+    unsigned char *bin = malloc(bin_len); // allocate memory for binary data
+    if (!bin) {
+        perror("Failed to allocate memory");
+        free(content);
+        exit(EXIT_FAILURE);
+    }
+
+    // decrypt content
+    hex_to_bin(content, bin, bin_len); // convert hex to binary
+
+    // saving to database
+    time_t now = time(NULL); // get current time
+    char output[256]; // output filename
+    sprintf(output, "%s/%ld.jpeg", SERVER_DATABASE, now); // create output filename
+    FILE *output_file = fopen(output, "wb"); // open output file
+    if (!output_file) {
+        perror("Failed to open output file");
+        free(content);
+        free(bin);
+        exit(EXIT_FAILURE);
+    }
+    
+    char success_msg[256];
+    snprintf(success_msg, sizeof(success_msg), "Successfully decrypted! File: %ld.jpeg", now);
+    success_msg[strlen(success_msg)] = '\0'; // null-terminate string
+    send(client_fd, success_msg, strlen(success_msg), 0);
+
+    char filename_msg[256];
+    snprintf(filename_msg, sizeof(filename_msg), "%ld.jpeg", now);
+    logging("Server", "SAVE", filename_msg); // log message
+    
+    // writing binary data to output file
+    fwrite(bin, 1, len, output_file); // write binary data
+    fclose(output_file); // close output file
+
+    // free memory
+    /* free(content); // free content
+    free(bin); // free binary data */
+    return; 
+}
+
+void client_handler(int client_fd) {
+    char buffer[7000]; // buffer for incoming data
+    if (read(client_fd, buffer, sizeof(buffer)) < 0) {// read data from client
+        perror("Failed to read from client");
+        close(client_fd);
+        return;
+    }
+
+    if (strncmp(buffer, "DECRYPT ", 8) == 0) {
+        char *newline = strchr(buffer, '\n'); // find newline character
+        if (!newline) {
+            send(client_fd, "ERROR Invalid format", 20, 0); // send error response
+            close(client_fd);
+            return;
+        }
+
+        *newline = '\0'; // null-terminate string
+
+        char *filename = buffer + 8; // get filename from buffer after eight position
+        char *content = newline + 1; // get content from buffer after newline
+
+        logging("Client", "DECRYPT", filename); // log message
+        decrypt(filename, content, client_fd); // decrypt file
+    }
+    else if (strncmp(buffer, "DOWNLOAD ", 9) == 0) {
+        char *filename = buffer + 9; // get filename from buffer
+        char filepath[256]; // file path
+        snprintf(filepath, sizeof(filepath), "%s/%s", SERVER_DATABASE, filename); // create file path
+
+        FILE *file = fopen(filepath, "rb"); // open file for reading
+        if (!file) { // check if file opened successfully
+            send(client_fd, "ERROR File not found", 20, 0); // send error response
+            close(client_fd);
+            return;
+        }
+
+        logging("Client", "DOWNLOAD", filename); // log message
+
+        char file_data[7000]; // buffer for file data   
+        size_t bytes_read; 
+        
+        while ((bytes_read = fread(file_data, 1, sizeof(file_data), file)) > 0) { // read file data
+            send(client_fd, file_data, bytes_read, 0); // send file data to client
+        }
+
+        logging("Server", "UPLOAD", filename); // log message
+
+        fclose(file); // close file
+        close(client_fd); // close client socket
+        return;
+    }
+    else if (strncmp(buffer, "EXIT", 4) ==0) {
+        logging("Client", "EXIT", "Client requested to exit"); // log message
+        close(client_fd); // close client socket
+        return;
+    }
+
+
+    close(client_fd); // close client socket
+    return;
 }
 ```
 
 ### Explanation
-{Fill this with your explanation about the code}
+In the client itself, the `decrypt()` and `download()` functions are the ones that mainly making the process happening.  
+1. `decrypt()` is to main function to send the command and data to be decrypted to server.
+2. `donwload()` is the main function to send the command to and to retrieve the decrypted data from server.
+> - `while ((bytes_received = read(sock, buffer, sizeof(buffer))) > 0)` is to retrieve the decrypted data, character-per-character, and combine alll of them into one file.
+
+
+Meanwhile in the server, the main functions that allows the success of generating the proper output are `client_handler()` and `decrypt()`, where:
+1. `client_handler()` is the main function that receives the commands from client and to make decisions based on those commands.
+> - `read(client_fd, buffer, sizeof(buffer)` is to read the commands that is given by client to server, and then saved into buffer. 
+> - the main logic `client_handler()` relies on is string comparison to decided what action the program should take. 
+> - `char *newline = strchr(buffer, '\n')` in "decision decrypt" is to break down the one line string of data into multiple parts where it can be differentiated into essential parts of data, like filename and content data. 
+> - `while ((bytes_read = fread(file_data, 1, sizeof(file_data), file)) > 0)` in the "decision download" is to make the server send over the data one by one to the client.
+
+2. `decrypt()` is the main function that handles the decryption process.
 
 ## Sub Soal f
 
 ### Overview
-To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+To make the error condition when the program is met with an error, so there's a disclaimer if it's met with an error.
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block
+
+#### Client
 ```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
+int sock = connect_to_server(); // connect to server
+if (sock < 0) { // check if connection failed
+    perror("Failed to connect to server");
+    continue;
+}
+
+void decrypt(int sock){
+    FILE *file = fopen(path, "r"); // open file for reading
+    if (file == NULL) { // check if file opened successfully
+        perror("Your file is an impostor. The filename doesn't exist.\n");
+        return;
+    }
+}
+```
+
+#### Server
+```c
+void decrypt(const char *filename, char *content, int client_fd) {
+    unsigned char *bin = malloc(bin_len); // allocate memory for binary data
+    if (!bin) {
+        perror("Failed to allocate memory");
+        free(content);
+        exit(EXIT_FAILURE);
+    }
 }
 ```
 
 ### Explanation
-{Fill this with your explanation about the code}
+In the client itself has many error messages when there's an error that comes up, but few of those are: 
+1. Failed to connect to server
+```c 
+if (sock < 0) { // check if connection failed
+        perror("Failed to connect to server");
+        continue;
+    }
+```
+when the socket is of an integer that is less than 0, it means that the connection didn't come through and it needs to be rebooted, hence the output of "Failed to connect to server".
+
+2. Wrong input file name
+```c
+if (file == NULL) { // check if file opened successfully
+    perror("Your file is an impostor. The filename doesn't exist.\n");
+    return;
+}
+```
+when the file name is wrong it leads to the opened file being of NULL value, hence the if condition above.
+
+Meanwhile on the client itself there is:
+1. Failed to find the file being inputted
+```c
+if (!bin) {
+    perror("Failed to allocate memory");
+    free(content);
+    exit(EXIT_FAILURE);
+}
+```
+where when the file is not found by server and it is managed to be found as a "directory" it will return as the memory of the content to be NULL, hence the condition above.
 
 ## Sub Soal g
 
 ### Overview
-To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+To have log all of the conversation between client and server
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block
 ```c
-int main() {
-    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
-    return 0;
+void logging(const char *source, const char *action, const char *info) {
+    time_t now = time(NULL); // get current time
+    struct tm *tm_info = localtime(&now);
+    char timestamp[20]; 
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", tm_info); // format timestamp
+    fprintf(log_file, "[%s][%s]: [%s] [%s]\n", source, timestamp, action, info); // log message
+    fflush(log_file);
 }
 ```
 
 ### Explanation
-{Fill this with your explanation about the code}
+The code above is the code to do the logging, where: 
+1. `struct tm *tm_info = localtime(&now);` to use struct as to find the timestamp atttributes.
+2. `fprintf(log_file, "[%s][%s]: [%s] [%s]\n", source, timestamp, action, info)` to write the log message according to format into the log fil 
+3. `fflush(log_file)` to make sure the message is written to the file. 
 
 # Soal 2
 
