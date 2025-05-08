@@ -777,7 +777,7 @@ The code above is the code to do the logging, where:
 Initialize the system with order data from delivery_order.csv and share it across processes.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![2a.jpg](assets/soal_2/2a.jpg)
 
 ### To download script
 ```c
@@ -813,7 +813,7 @@ order_data = mmap(NULL, sizeof(SharedOrders), PROT_READ | PROT_WRITE, MAP_SHARED
 Automatically deliver Express orders using three agent threads (A, B, C). Each agent continuously searches for pending Express orders, delivers them, and logs the activity.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![2b.jpg.jpeg](assets/soal_2/2b.jpg.jpeg)
 
 ### Code Block
 ```c
@@ -873,7 +873,7 @@ for(int i = 0; i < 3; i++) {
 Allows users to manually deliver Reguler orders via command-line. Each delivery is logged with the user’s OS username as the agent.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![2c.jpg](assets/soal_2/2c.jpg)
 
 ### Code Block (Dispatcher.C)
 ```c
@@ -925,7 +925,7 @@ char* get_username() {
 Allows users to check the delivery status of a specific customer order via command-line. Shows whether the package is `Pending` or `Delivered` (with agent name).
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![2d.jpg.jpeg](assets/soal_2/2d.jpg.jpeg)
 
 ### Code Block (Dispatcher.C)
 ```c
@@ -964,7 +964,7 @@ void check_status(char *customer_name)
 This feature allows the dispatcher to view all delivery orders stored in shared memory.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![2e.jpg](assets/soal_2/2e.jpg)
 
 ### Code Block (Dispatcher.C)
 ```c
