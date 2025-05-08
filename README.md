@@ -792,7 +792,6 @@ wget --load-cookies cookies.txt "https://docs.google.com/uc?export=download&conf
 -O "${file_name}"
 
 rm cookies.txt
-}
 ```
 
 ### Code Block
@@ -962,41 +961,41 @@ void check_status(char *customer_name)
 ## Sub Soal e
 
 ### Overview
-Allows users to check the delivery status of a specific customer order via command-line. Shows whether the package is `Pending` or `Delivered` (with agent name).
+This feature allows the dispatcher to view all delivery orders stored in shared memory.
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
 
 ### Code Block (Dispatcher.C)
 ```c
-void check_status(char *customer_name)
-{
+void list_orders() {
     pthread_mutex_lock(&shared_data->lock);
-    
+
+    printf("\n            RushGo Package Statuses\n");
+    printf("     ========================================\n");
+    printf("     |   Customer    |  Service |  Status   |\n");
+    printf("     ----------------------------------------\n");
+
     for(int i = 0; i < shared_data->total_orders; i++) {
         Order *order = &shared_data->orders[i];
-        
-        if(strcmp(order->customer, customer_name) == 0) {
-            if(strcmp(order->status, "Delivered") == 0) {
-                printf("Status for %s: Delivered by Agent %s\n", 
-                       customer_name, order->handled_by);
-            } else {
-                printf("Status for %s: Pending\n", customer_name);
-            }
-            break; // Stop after first match
-        }
+        printf("     | %-13s | %-8s | %-9s |\n", 
+               order->customer, 
+               order->service, 
+               order->status);
     }
+
+    printf("     ----------------------------------------\n");
+    printf("  For more informations, please hit our Contact Person\n\n");
+
     pthread_mutex_unlock(&shared_data->lock);
 }
 ```
 
 ### Explanation
-> - User Command: Triggers the status check for customer "Tarisa".
-> - Mutex Lock: Locks the shared memory to prevent data corruption during read operations. Ensures no agent thread (AGENT A/B/C) can modify orders while checking status.
-> - Order Search: Iterates through all orders in shared memory. Uses strcmp to find the first order with customer name "Tarisa".
-> - Check Logic:
-        Delivered: Shows agent name (e.g., Agent C if delivered by AGENT C).
-        Pending: Indicates the order hasn’t been processed yet.
+> - list_orders() is a function called when the user runs ./dispatcher -list.
+> - It locks the shared memory using pthread_mutex_lock to safely access order data.
+> - A loop iterates through each order and prints the customer name, service type, and status in a formatted table.
+> - After printing, it releases the lock using pthread_mutex_unlock.
 
 # Soal 3
 
