@@ -394,6 +394,234 @@ int main() {
 ### Explanation
 {Fill this with your explanation about the code}
 
+# Soal 2
+
+## Sub Soal a
+
+### Overview
+Initialize the system with order data from delivery_order.csv and share it across processes.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### To download script
+```c
+file_id="1OJfRuLgsBnIBWtdRXbRsD2sG6NhMKOg9"
+file_name="delivery_order.csv"
+
+confirm=$(wget --quiet --save-cookies cookies.txt --keep-session-cookies --no-check-certificate \
+"https://docs.google.com/uc?export=download&id=${file_id}" -O- | \
+sed -rn 's/.confirm=([0-9A-Za-z_]+)./\1/p')
+
+wget --load-cookies cookies.txt "https://docs.google.com/uc?export=download&confirm=${confirm}&id=${file_id}" \
+-O "${file_name}"
+
+rm cookies.txt
+}
+```
+
+### Code Block
+```c
+int mem_fd = shm_open(SHARED_MEM_NAME, O_CREAT | O_RDWR, 0666);
+ftruncate(mem_fd, sizeof(SharedOrders));
+order_data = mmap(NULL, sizeof(SharedOrders), PROT_READ | PROT_WRITE, MAP_SHARED, mem_fd, 0); 
+}
+```
+
+### Explanation
+> - shm_open(): Creates a shared memory object named /rushgo_memory.
+> - ftruncate(): Resizes the shared memory to fit the SharedOrders struct.
+> - mmap(): Maps the shared memory into the process’s address space for read/write access.
+
+## Sub Soal b
+
+### Overview
+Automatically deliver Express orders using three agent threads (A, B, C). Each agent continuously searches for pending Express orders, delivers them, and logs the activity.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+void *AGENTNAME(void *agent_name) {
+    char *agent = (char *)agent_name;
+    
+    while(1) {
+        pthread_mutex_lock(&order_data->lock);
+        
+        int order_found = 0;
+        for(int i = 0; i < order_data->total_orders; i++) {
+            Order *current = &order_data->orders[i];
+            
+            if(strcmp(current->service, "Express") == 0 && 
+               strcmp(current->status, "Pending") == 0) {
+                
+                strcpy(current->status, "Delivered");
+                strncpy(current->handled_by, agent, 19);
+                order_found = 1;
+                
+                write_log(agent, current->nama, current->alamat, "Express");
+                break;
+            }
+        }
+        
+        pthread_mutex_unlock(&order_data->lock);
+        
+        if(order_found) sleep(1);
+        else sleep(2);
+    }
+    return NULL;
+}
+```
+
+```c
+pthread_t agents[3];
+char *agent_ids[] = {"AGENT A", "AGENT B", "AGENT C"};
+
+for(int i = 0; i < 3; i++) {
+    pthread_create(&agents[i], NULL, AGENTNAME, agent_ids[i]);
+}
+```
+
+### Explanation
+> 1. Infinite Loop: Each agent thread runs continuously.
+> 2. Mutex Lock: Safely access shared memory (prevents race conditions).
+> 3. Search for Express Orders: Finds the first pending Express order.
+> 4. Update Order: Marks the order as delivered and assigns the agent.
+> 5. Log Delivery: Writes to delivery.log (fix needed: replace at with in).
+> 6. Sleep:
+>     Sleeps for 1 second after delivery (simulates work).
+>     Sleeps for 2 seconds if no orders found (reduces CPU usage).
+
+## Sub Soal c
+
+### Overview
+Allows users to manually deliver Reguler orders via command-line. Each delivery is logged with the user’s OS username as the agent.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block (Dispatcher.C)
+```c
+void deliver_package(char *customer_name) {
+    char *user = get_username();  // Get OS username (e.g., "ubuntu_user")
+    pthread_mutex_lock(&shared_data->lock);
+
+    for(int i = 0; i < shared_data->total_orders; i++) {
+        Order *order = &shared_data->orders[i];
+        
+        if(strcmp(order->customer, customer_name) == 0 && 
+           strcmp(order->service, "Reguler") == 0) {
+
+            // Update status and agent
+            strcpy(order->status, "Delivered");
+            strcpy(order->handled_by, user);
+
+            // Write to log
+            struct tm *tm = localtime(&now);
+            fprintf(log, "[%s] [AGENT %s] Reguler package delivered to %s in %s\n",
+                    timestamp, user, order->customer, order->address);
+            break;
+        }
+    }
+    pthread_mutex_unlock(&shared_data->lock);
+}
+```
+
+```c
+char* get_username() {
+    struct passwd *pw = getpwuid(getuid());
+    return pw ? pw->pw_name : "unknown";
+}
+```
+
+### Explanation
+> - User Command: Triggers delivery with ./dispatcher -deliver "Tarisa".
+> - Shared Memory Access:
+>        Locks mutex for thread-safe access.
+>        Searches for the first Reguler order matching the customer name.
+> - Update Order:
+>        Sets status to Delivered.
+>        Records the OS username in handled_by.
+> - Logging: Appends to delivery.log
+
+## Sub Soal d
+
+### Overview
+Allows users to check the delivery status of a specific customer order via command-line. Shows whether the package is `Pending` or `Delivered` (with agent name).
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block (Dispatcher.C)
+```c
+void check_status(char *customer_name)
+{
+    pthread_mutex_lock(&shared_data->lock);
+    
+    for(int i = 0; i < shared_data->total_orders; i++) {
+        Order *order = &shared_data->orders[i];
+        
+        if(strcmp(order->customer, customer_name) == 0) {
+            if(strcmp(order->status, "Delivered") == 0) {
+                printf("Status for %s: Delivered by Agent %s\n", 
+                       customer_name, order->handled_by);
+            } else {
+                printf("Status for %s: Pending\n", customer_name);
+            }
+            break; // Stop after first match
+        }
+    }
+    pthread_mutex_unlock(&shared_data->lock);
+}
+```
+
+### Explanation
+> - User Command: ./dispatcher -status "Tarisa"
+> - Shared Memory Access: Locks mutex for thread-safe read operations.
+> - Order Search: Iterates through orders to find the first match for the customer name.
+> - Status Check:
+        Returns Delivered by Agent [Name] if delivered.
+        Returns Pending if not yet processed.
+
+## Sub Soal e
+
+### Overview
+Allows users to check the delivery status of a specific customer order via command-line. Shows whether the package is `Pending` or `Delivered` (with agent name).
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block (Dispatcher.C)
+```c
+void check_status(char *customer_name)
+{
+    pthread_mutex_lock(&shared_data->lock);
+    
+    for(int i = 0; i < shared_data->total_orders; i++) {
+        Order *order = &shared_data->orders[i];
+        
+        if(strcmp(order->customer, customer_name) == 0) {
+            if(strcmp(order->status, "Delivered") == 0) {
+                printf("Status for %s: Delivered by Agent %s\n", 
+                       customer_name, order->handled_by);
+            } else {
+                printf("Status for %s: Pending\n", customer_name);
+            }
+            break; // Stop after first match
+        }
+    }
+    pthread_mutex_unlock(&shared_data->lock);
+}
+```
+
+### Explanation
+> - User Command: Triggers the status check for customer "Tarisa".
+> - Mutex Lock: Locks the shared memory to prevent data corruption during read operations. Ensures no agent thread (AGENT A/B/C) can modify orders while checking status.
+> - Order Search: Iterates through all orders in shared memory. Uses strcmp to find the first order with customer name "Tarisa".
+> - Check Logic:
+        Delivered: Shows agent name (e.g., Agent C if delivered by AGENT C).
+        Pending: Indicates the order hasn’t been processed yet.
 
 # Soal 3
 
