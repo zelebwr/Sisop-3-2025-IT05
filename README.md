@@ -39,7 +39,7 @@ int main() {
 ## Sub Soal a
 
 ### Overview
-To download the needed secret text in the provided link.
+To **download** the needed **secret text** in the provided link.
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
@@ -57,7 +57,7 @@ unzip secret.zip
 ## Sub Soal b
 
 ### Overview
-To connect the client and the server through an RPC socket using daemon process.
+To **connect** the client and the server through an **RPC socket** using **daemon** process.
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
@@ -163,8 +163,35 @@ int main () {
 ### Explanation
 For the client itself, it uses the `connect_to_server()` function to connect itself to the server.
 
+```c
+int connect_to_server() {
+    int sock = 0; 
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {  // create socket
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+    
+    struct sockaddr_in serv_addr = {
+        .sin_family = AF_INET, // IPv4
+        .sin_port = htons(PORT) // port number
+    };
+
+    if (inet_pton(AF_INET, IP, &serv_addr.sin_addr) <= 0) { // convert IP address
+        perror("Invalid address/ Address not supported");
+        exit(EXIT_FAILURE);
+    }
+
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) { // connect to server
+        perror("Connection failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return sock;
+}
+```
+
 The way it works is: 
-1. `sock = socket(AF_INET, SOCK_STREAM, 0` to initialize the socket the program is connected to
+1. `sock = socket(AF_INET, SOCK_STREAM, 0` to initialize the socket the program is connected to.  
 > - `socket()` function is to create the socket, and it returns an integer of the socket it's connected to.  
 > - `AF_INET` is to address the family internet as IPv4.  
 > - `SOCK_STREAM` is to specify the type of socket. Here, it specifies it as a TCP (Transmission Control Protocol) protocol, as in a connection-oriented, reliable, two-way communication using a stream of bytes protocol.  
@@ -181,12 +208,63 @@ struct sockaddr_in serv_addr = {
 > - `.sin_family` is to declare the family internet it's using.  
 > - `.sin_port` using the `htons()` to declare the port number it's using.
 
-# Soal 2
+3. `inet_pton(AF_INET, IP, &serv_addr.sin_addr)` is to convert the string address into binary form.
 
-## Sub Soal a
+4. `connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)` is to make a connection on a socket.
+
+
+Meanwhile, for the server it uses the `setup_server()` function.
+
+```c
+int setup_server() {
+    int server_fd = socket(AF_INET, SOCK_STREAM, 0); // create socket
+    if (server_fd < 0) { // check if socket creation failed
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    struct sockaddr_in address = {
+        .sin_family = AF_INET, // IPv4
+        .sin_addr.s_addr = INADDR_ANY, // any address
+        .sin_port = htons(PORT) // port number
+    };
+
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) { // bind socket to address
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    if (listen(server_fd, 5) < 0) { // listen for incoming connections
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
+    }
+
+    return server_fd;
+}
+```
+
+1. `server_fd = socket(AF_INET, SOCK_STREAM, 0)` is to set up the socket.  
+
+2. Here, the code below is to initialize socket properties.
+```c
+struct sockaddr_in address = {
+    .sin_family = AF_INET, // IPv4
+    .sin_addr.s_addr = INADDR_ANY, // any address
+    .sin_port = htons(PORT) // port number
+};
+```
+
+> - `.sin_addr.s_addr` is to declare what address to accept. 
+> - `INADDR_ANY` is to say to accept any address.
+
+3. `bind(server_fd, (struct sockaddr *)&address, sizeof(address)` is to bind the socket with the local socket address.
+
+4. `listen(server_fd, 5)` is to tell the program to listen to a connection through the socket's connection.
+
+## Sub Soal c
 
 ### Overview
-Initialize the system with order data from 'delivery_order.csv' and share it across processes.
+To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
 
 ### Input/&Output
 ![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
@@ -201,3 +279,118 @@ int main() {
 
 ### Explanation
 {Fill this with your explanation about the code}
+
+## Sub Soal c
+
+### Overview
+To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
+
+## Sub Soal c
+
+### Overview
+To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
+
+## Sub Soal d
+
+### Overview
+To make a client CLI where it can **repeatedly input a command**.  
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
+
+## Sub Soal e
+
+### Overview
+To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
+
+## Sub Soal f
+
+### Overview
+To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
+
+## Sub Soal g
+
+### Overview
+To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
+
+### Input/&Output
+![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+### Code Block
+```c
+int main() {
+    printf(%s, "fill this with your code block that function for mainly the asked purpose of the sub question");
+    return 0;
+}
+```
+
+### Explanation
+{Fill this with your explanation about the code}
+

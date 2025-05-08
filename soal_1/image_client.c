@@ -63,7 +63,7 @@ void decrypt(int sock) {
     content[file_size] = '\0'; // null-terminate the string 
     fclose(file); // close file
 
-    char command[256];
+    char command[7000];
     snprintf(command, sizeof(command), "DECRYPT %s\n%s", filename, content); // create command
     send(sock, command, strlen(command), 0); // send command to server
 
