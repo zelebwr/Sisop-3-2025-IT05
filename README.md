@@ -7,7 +7,12 @@
 To **download** the needed **secret text** in the provided link.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+#### Before
+![linkInput](./assets/soal_1/linkInput.png)
+
+#### After
+![linkOutput](./assets/soal_1/linkOutput.png)
 
 ### Code Block
 ```bash
@@ -25,7 +30,12 @@ unzip secret.zip
 To **connect** the client and the server through an **RPC socket** using **daemon** process.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+#### Before
+![ps_aux_before](./assets/soal_1/ps_aux_before.png)
+
+#### After
+![ps_aux_after](./assets/soal_1/ps_aux_after.png)
 
 ### Code Block
 
@@ -232,7 +242,19 @@ struct sockaddr_in address = {
 To decrypt a text file by using **Reverse Text and then decode From Hex** and make the current **timestamp** as the name of the file.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+
+#### Before 
+![directoryBefore](./assets/soal_1/directoryBefore.png)
+
+#### Input
+![Decypting](./assets/soal_1/decryptSequence.png)
+
+![Downloading](./assets/soal_1/downloadSequece.png)
+
+#### After 
+![Decrypting](./assets/soal_1/directoryAfterServer.png)
+
+![Downloading](./assets/soal_1/directoryAfterClient.png)
 
 ### Code Block
 
@@ -395,7 +417,9 @@ Initially the `command` variable has the size of 256, which was not enough to tr
 To make a client CLI where it can **repeatedly input a command**.  
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![Decrypt](assets/soal_1/decryptSequence.png)
+
+![Download](assets/soal_1/downloadSequece.png)
 
 ### Code Block
 ```c
@@ -458,7 +482,7 @@ To put it bluntly, the code above works by doing an infinite while loop so it ca
 To make sure the output file can be opened as a jpeg image and find the king himself, rootkids.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![rootkids](assets/soal_1/rootkids.png)
 
 ### Code Block
 
@@ -679,7 +703,9 @@ Meanwhile in the server, the main functions that allows the success of generatin
 To make the error condition when the program is met with an error, so there's a disclaimer if it's met with an error.
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![error1](assets/soal_1/connectionFailed.png)
+
+![error2](assets/soal_1/failTest.png)
 
 ### Code Block
 
@@ -749,7 +775,7 @@ where when the file is not found by server and it is managed to be found as a "d
 To have log all of the conversation between client and server
 
 ### Input/&Output
-![ThisIsInput/OutputImageOfAnExample.png](assets/temp.txt)
+![serverLog](assets/soal_1/serverLog.png)
 
 ### Code Block
 ```c
