@@ -459,7 +459,7 @@ Sightseeing
 When player.c is run, it connects to the dungeon server (dungeon.c) and displays a main menu. Players find interesting things around the dungeon, like a weapon shop and a mysterious door.
 
 ### Output
-![b.png](assets/soal_3/mainmenu.txt)
+![b.png](assets/soal_3/mainmenu.png)
 
 ### Code Block
 ```c
@@ -516,7 +516,7 @@ Status Check
 Choosing Show Player Stats displays the player's current gold, equipped weapon, base damage, and total kills. Useful before buying weapons.
 
 ### Output
-![c.png](assets/soal_3/stats.txt)
+![c.png](assets/soal_3/stats.png)
 
 ### Code Block
 ```c
@@ -550,7 +550,7 @@ Upon entering the shop, players can view a list of at least 5 weapons, each with
 
 
 ### Output
-![d.png](assets/soal_3/shop.txt)
+![d.png](assets/soal_3/shop.png)
 
 ### Code Block in shop.c
 ```c
@@ -670,7 +670,7 @@ Handy Inventory
 Players can view and equip weapons from their inventory. If a weapon has a passive, it is shown. Equipping a new weapon updates the player's damage and passive status.
 
 ### Output
-![e.png](assets/soal_3/inven.txt)
+![e.png](assets/soal_3/inven.png)
 
 ### Code Block
 ```c
@@ -725,7 +725,7 @@ Entering Battle Mode spawns a random enemy (50–200 HP). Players can attack or 
 
 
 ### Output
-![f.png](assets/soal_3/battle.txt)
+![f.png](assets/soal_3/battle.png)
 
 ### Code Block
 
@@ -800,9 +800,12 @@ Other Battle Logic
 ### Overview
 - Health & Rewards
 - Damage Equation
-![g.png](assets/soal_3/g.txt)
+
+![g.png](assets/soal_3/g.png)
+
 - Passive
-![passive.png](assets/soal_3/passive.txt)
+
+![passive.png](assets/soal_3/passive.png)
 
 ## Sub Soal h
 
@@ -812,7 +815,7 @@ Invalid inputs (like unknown menu options) are properly handled and trigger warn
 
 
 ### Output
-![g.png](assets/soal_3/errorh.txt)
+![g.png](assets/soal_3/errorh.png)
 
 ### Code Block
 ```c
